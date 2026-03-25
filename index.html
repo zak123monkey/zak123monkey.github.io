@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Studiq</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  display: flex;
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  color: white;
+  overflow: hidden;
+}
+
+/* BACKGROUND GLOW */
+body::before, body::after {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: rgba(59,130,246,0.3);
+  border-radius: 50%;
+  filter: blur(100px);
+  animation: move 10s infinite alternate;
+}
+
+body::before { top: -150px; left: -150px; }
+body::after { bottom: -150px; right: -150px; }
+
+@keyframes move {
+  from { transform: translateY(0); }
+  to { transform: translateY(50px); }
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(10px);
+  height: 100vh;
+  padding: 20px;
+  z-index: 1;
+}
+
+.sidebar h2 {
+  text-align: center;
+}
+
+.sidebar button {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.sidebar button:hover {
+  background: #3b82f6;
+  transform: translateX(5px);
+}
+
+/* MAIN */
+.main {
+  flex: 1;
+  padding: 40px;
+  z-index: 1;
+}
+
+/* PAGES */
+.page { display: none; }
+.active { display: block; }
+
+/* GLASS BOX */
+.box {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(15px);
+  padding: 25px;
+  border-radius: 20px;
+  max-width: 500px;
+  margin: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  transition: 0.3s;
+}
+
+.box:hover {
+  transform: translateY(-5px);
+}
+
+/* INPUT */
+textarea, input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 10px;
+  border: none;
+}
+
+/* BUTTON */
+button.main {
+  margin-top: 10px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button.main:hover {
+  transform: scale(1.05);
+}
+
+/* TIMER */
+#time {
+  font-size: 45px;
+  margin: 15px 0;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+<h2>📚 Studiq</h2>
+<button onclick="showPage('home')">🏠 Home</button>
+<button onclick="showPage('timer')">⏱️ Timer</button>
+<button onclick="showPage('notes')">🧠 Notes</button>
+<button onclick="showPage('planner')">📅 Planner</button>
+</div>
+
+<div class="main">
+
+<div id="home" class="page active">
+<h1>Study Smarter</h1>
+<p>Your all-in-one study system</p>
+</div>
+
+<div id="timer" class="page">
+<div class="box">
+<h2>⏱️ Study Timer</h2>
+<input id="minutes" type="number" placeholder="Enter minutes">
+<div id="time">00:00</div>
+<button class="main" onclick="startTimer()">Start</button>
+<button class="main" onclick="resetTimer()">Reset</button>
+</div>
+</div>
+
+<div id="notes" class="page">
+<div class="box">
+<h2>🧠 Notes Summarizer</h2>
+<textarea id="text"></textarea>
+<button class="main" onclick="summarize()">Summarize</button>
+<div id="result"></div>
+</div>
+</div>
+
+<div id="planner" class="page">
+<div class="box">
+<h2>📅 Smart Planner</h2>
+<textarea id="schedule"></textarea>
+<button class="main" onclick="generatePlan()">Generate Plan</button>
+<div id="planResult"></div>
+</div>
+</div>
+
+</div>
+
+<script>
+
+// NAV
+function showPage(page) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(page).classList.add("active");
+}
+
+// TIMER
+let t = 0;
+let int;
+
+function startTimer() {
+  clearInterval(int);
+  let mins = document.getElementById("minutes").value;
+  if (!mins) return alert("Enter minutes!");
+  t = mins * 60;
+
+  int = setInterval(() => {
+    if (t <= 0) {
+      clearInterval(int);
+      alert("Time's up!");
+      return;
+    }
+
+    t--;
+    let m = Math.floor(t/60);
+    let s = t%60;
+
+    document.getElementById("time").innerText =
+      m + ":" + (s<10?"0":"") + s;
+
+  }, 1000);
+}
+
+function resetTimer() {
+  clearInterval(int);
+  document.getElementById("time").innerText = "00:00";
+}
+
+// SUMMARY
+function summarize() {
+  let text = document.getElementById("text").value;
+  let sentences = text.split(".");
+  document.getElementById("result").innerHTML =
+    sentences.slice(0,2).join(".");
+}
+
+// PLANNER
+function generatePlan() {
+  let text = document.getElementById("schedule").value;
+  let subjects = ["Study"];
+
+  if (text.toLowerCase().includes("math")) subjects.push("Math");
+  if (text.toLowerCase().includes("bio")) subjects.push("Biology");
+
+  let plan = "";
+  subjects.forEach((s,i)=>{
+    plan += `<p>Day ${i+1}: ${s}</p>`;
+  });
+
+  document.getElementById("planResult").innerHTML = plan;
+}
+
+</script>
+
+</body>
+</html>
