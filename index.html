@@ -1,114 +1,99 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Studiq - Ultimate Study Platform</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studiq</title>
 
 <style>
-/* ================= GLOBAL STYLE ================= */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #0f172a, #1e3a8a, #020617);
+  font-family: 'Inter', Arial, sans-serif;
+  background: linear-gradient(135deg, #2c003e, #5a0f4d, #a83279, #ff6a3d);
   color: white;
-  overflow-x: hidden;
 }
 
-/* Floating background design */
-.shape {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.08;
-  animation: float 15s infinite ease-in-out;
-}
-
-@keyframes float {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-80px); }
-  100% { transform: translateY(0); }
-}
-
-/* Navigation */
 nav {
   display: flex;
   justify-content: space-around;
   padding: 15px;
   background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(10px);
 }
 
 nav button {
   background: none;
   border: none;
   color: white;
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
+  transition: 0.2s;
 }
 
-/* Pages */
-.page {
-  display: none;
-  padding: 40px;
-  max-width: 1000px;
-  margin: auto;
+nav button:hover {
+  color: #60a5fa;
+  transform: scale(1.05);
 }
+
+.page { display: none; padding: 40px; max-width: 1000px; margin: auto; }
 .active { display: block; }
 
-/* Card UI */
 .box {
-  background: rgba(255,255,255,0.08);
-  padding: 30px;
+  background: rgba(255,255,255,0.07);
+  padding: 25px;
   border-radius: 20px;
   margin-top: 20px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  transition: 0.3s;
 }
 
-/* Inputs */
+.box:hover {
+  transform: translateY(-5px);
+}
+
 textarea, input {
   width: 100%;
-  padding: 15px;
-  border-radius: 12px;
+  padding: 12px;
+  border-radius: 10px;
   border: none;
   margin-top: 10px;
-  font-size: 16px;
+  background: rgba(255,255,255,0.1);
+  color: white;
 }
 
-/* Buttons */
 button.main {
   margin-top: 10px;
-  padding: 15px;
-  border-radius: 12px;
+  padding: 12px;
+  border-radius: 10px;
   border: none;
-  background: #3b82f6;
+  background: linear-gradient(135deg,#3b82f6,#6366f1);
   color: white;
   cursor: pointer;
+  transition: 0.25s;
 }
 
 button.main:hover {
-  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
-/* Tools */
-.tools button {
-  width: 100%;
-  padding: 16px;
-  margin-top: 10px;
-}
+#time { font-size: 48px; text-align: center; margin-top: 15px; }
 
-/* Game */
-#gameCanvas {
-  background: black;
-  display: block;
-  margin: auto;
-}
+.progress { height: 6px; background: rgba(255,255,255,0.2); border-radius: 10px; margin-top: 10px; overflow:hidden }
+.progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg,#22c55e,#4ade80); }
+
+.task-done { text-decoration: line-through; opacity: 0.6; }
+
+#gameCanvas { background: black; display: block; margin: auto; border-radius:10px }
+
+h1,h2,h3{font-weight:600}
+
 </style>
 </head>
 
 <body>
 
-<!-- Background shapes -->
-<div class="shape" style="width:300px;height:300px;background:#00f;top:10%;left:10%;"></div>
-<div class="shape" style="width:250px;height:250px;background:#0ff;top:70%;left:80%;"></div>
-<div class="shape" style="width:200px;height:200px;background:#f0f;top:50%;left:20%;"></div>
-
-<!-- NAV -->
 <nav>
 <button onclick="showPage('home')">Home</button>
 <button onclick="showPage('timer')">Timer</button>
@@ -117,135 +102,91 @@ button.main:hover {
 <button onclick="showPage('tools')">Tools</button>
 </nav>
 
-<!-- HOME -->
 <div id="home" class="page active">
-<h1>Welcome & Study</h1>
-<p style="text-align:center;">
+<h1>Welcome to Studiq</h1>
+<p style="text-align:center; opacity:0.7;">
 "to be is to do" — zak123monkey
 </p>
 
 <div class="box">
-<p>
-Welcome to Studiq — your all-in-one study system designed to help students focus better, stay organized,
-and improve productivity every single day. This platform combines tools like timers, planners, note summarization,
-and even a break game so you can study smarter without burnout.
-</p>
-
-<p>
-Use the timer to focus, the planner to organize your time, the summarizer to simplify your notes,
-and the tools section for productivity boosts. Everything here is designed to help you succeed.
-</p>
+<p>All-in-one study system to help you focus, organize, and improve daily.</p>
 </div>
 </div>
 
-<!-- TIMER -->
 <div id="timer" class="page">
 <div class="box">
-<h2>⏱️ Study Timer</h2>
-
-<p>Enter how many minutes you want to study. Stay focused until it ends.</p>
-
+<h2>⏱ Study Timer</h2>
 <input id="mins" placeholder="Enter minutes">
-<button class="main" onclick="startTimer()">Start Timer</button>
-
+<button class="main" onclick="startTimer()">Start</button>
 <h1 id="time">00:00</h1>
+<div class="progress"><div id="bar" class="progress-bar"></div></div>
 </div>
 </div>
 
-<!-- SUMMARIZER -->
 <div id="notes" class="page">
 <div class="box">
 <h2>🧠 Smart Summarizer</h2>
-
-<p>
-Paste your notes below. This tool will:
-<br>• Shorten long paragraphs  
-<br>• Extract key ideas  
-<br>• Help you revise faster  
-</p>
-
-<textarea id="text" placeholder="Paste your notes here..."></textarea>
+<textarea id="text" placeholder="Paste notes..."></textarea>
 <button class="main" onclick="summarize()">Summarize</button>
-
 <div id="result"></div>
 </div>
 </div>
 
-<!-- PLANNER -->
 <div id="planner" class="page">
 <div class="box">
-<h2>📅 Study Planner</h2>
-
-<p>Separate tasks with commas and it will create a daily plan.</p>
-
-<textarea id="plan" placeholder="Math, Science, English..."></textarea>
-<button class="main" onclick="makePlan()">Generate Plan</button>
-
+<h2>📅 Planner</h2>
+<textarea id="plan" placeholder="Math, Science..."></textarea>
+<button class="main" onclick="makePlan()">Generate</button>
 <div id="planOut"></div>
 </div>
 </div>
 
-<!-- TOOLS -->
 <div id="tools" class="page">
-<div class="box tools">
-
+<div class="box">
 <h3>💬 Motivation</h3>
-<button onclick="quote()">Get Motivation</button>
+<button class="main" onclick="quote()">Get Quote</button>
 <p id="quote"></p>
 
-<h3>📝 Task Manager</h3>
-<input id="taskInput" placeholder="Add a task">
-<button onclick="addTask()">Add Task</button>
+<h3>📝 Tasks</h3>
+<input id="taskInput" placeholder="Add task">
+<button class="main" onclick="addTask()">Add</button>
 <ul id="tasks"></ul>
 
-<h3>🎯 Goal Tracker</h3>
-<input id="goalInput" placeholder="Your main goal">
-<button onclick="setGoal()">Save Goal</button>
+<h3>🎯 Goal</h3>
+<input id="goalInput" placeholder="Goal">
+<button class="main" onclick="setGoal()">Save</button>
 <p id="goal"></p>
 
-<h3>🎮 Break Game</h3>
-<button onclick="openGame()">Play Game</button>
-<p>Move with arrow keys. Collect coins. Avoid the enemy.</p>
-
-<h3>🧠 Smart Study Tools</h3>
-<button onclick="tool('focus')">Deep Focus</button>
-<button onclick="tool('memory')">Memory Trick</button>
-<button onclick="tool('exam')">Exam Hack</button>
-<button onclick="tool('energy')">Energy Boost</button>
-<p id="toolOutput"></p>
-
+<h3>🎮 Game</h3>
+<button class="main" onclick="openGame()">Play</button>
 </div>
 </div>
 
-<!-- GAME -->
 <div id="gameScreen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black;">
 <canvas id="gameCanvas" width="800" height="600"></canvas>
 <button onclick="closeGame()" style="position:absolute;top:10px;right:10px;">Exit</button>
 </div>
 
 <script>
-
-/* ================= NAV ================= */
 function showPage(id){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
-/* ================= TIMER ================= */
-let t,int;
+let t,int,total;
 function startTimer(){
   let m=document.getElementById("mins").value;
-  t=m*60;
+  t=m*60; total=t;
   clearInterval(int);
   int=setInterval(()=>{
     let min=Math.floor(t/60);
     let sec=t%60;
-    document.getElementById("time").innerText=min+":"+(sec<10?"0":"")+sec;
+    time.innerText=min+":"+(sec<10?"0":"")+sec;
+    bar.style.width=((total-t)/total)*100+"%";
     t--;
   },1000);
 }
 
-/* ================= SUMMARIZER ================= */
 function summarize(){
   let text=document.getElementById("text").value;
   let sentences=text.split(".");
@@ -253,7 +194,6 @@ function summarize(){
   document.getElementById("result").innerHTML="<b>Summary:</b><br>"+summary;
 }
 
-/* ================= PLANNER ================= */
 function makePlan(){
   let t=document.getElementById("plan").value.split(",");
   let out="";
@@ -261,7 +201,6 @@ function makePlan(){
   document.getElementById("planOut").innerHTML=out;
 }
 
-/* ================= MOTIVATION ================= */
 let quotes=[
 "Stay focused and never give up",
 "Small progress is still progress",
@@ -274,9 +213,7 @@ function quote(){
   quotes[Math.floor(Math.random()*quotes.length)];
 }
 
-/* ================= TASKS ================= */
 let tasks=JSON.parse(localStorage.getItem("tasks"))||[];
-
 function render(){
   let list=document.getElementById("tasks");
   list.innerHTML="";
@@ -286,85 +223,41 @@ function render(){
     list.appendChild(li);
   });
 }
-
 function addTask(){
   let t=document.getElementById("taskInput").value;
   tasks.push(t);
   localStorage.setItem("tasks",JSON.stringify(tasks));
   render();
 }
-
 function del(i){
   tasks.splice(i,1);
   localStorage.setItem("tasks",JSON.stringify(tasks));
   render();
 }
-
 render();
 
-/* ================= GOAL ================= */
 function setGoal(){
   let g=document.getElementById("goalInput").value;
   localStorage.setItem("goal",g);
   document.getElementById("goal").innerText=g;
 }
 
-/* ================= GAME ================= */
-let canvas,ctx,player,enemy,coins,score,run;
-
+let canvas,ctx,player,enemy,coins,run;
 function openGame(){
   document.getElementById("gameScreen").style.display="block";
   canvas=document.getElementById("gameCanvas");
   ctx=canvas.getContext("2d");
-
-  player={x:100,y:100};
-  enemy={x:400,y:300};
-  coins=[];
-  for(let i=0;i<15;i++){
-    coins.push({x:Math.random()*780,y:Math.random()*580});
-  }
-  score=0;
-  run=true;
-  loop();
+  player={x:100,y:100}; enemy={x:400,y:300}; coins=[];
+  for(let i=0;i<10;i++) coins.push({x:Math.random()*780,y:Math.random()*580});
+  run=true; loop();
 }
-
-function closeGame(){
-  run=false;
-  document.getElementById("gameScreen").style.display="none";
-}
-
+function closeGame(){run=false; document.getElementById("gameScreen").style.display="none";}
 function loop(){
   if(!run) return;
-
   ctx.clearRect(0,0,800,600);
-
-  ctx.fillStyle="cyan";
-  ctx.fillRect(player.x,player.y,20,20);
-
-  ctx.fillStyle="red";
-  enemy.x+=(player.x-enemy.x)*0.02;
-  enemy.y+=(player.y-enemy.y)*0.02;
-  ctx.fillRect(enemy.x,enemy.y,25,25);
-
-  ctx.fillStyle="yellow";
-  coins.forEach((c,i)=>{
-    ctx.fillRect(c.x,c.y,10,10);
-    if(Math.abs(player.x-c.x)<15 && Math.abs(player.y-c.y)<15){
-      coins.splice(i,1);
-      score++;
-    }
-  });
-
-  if(Math.abs(player.x-enemy.x)<20){
-    ctx.fillStyle="white";
-    ctx.fillText("Game Over Score: "+score,250,300);
-    run=false;
-    return;
-  }
-
-  ctx.fillStyle="white";
-  ctx.fillText("Score: "+score,10,20);
-
+  ctx.fillStyle="cyan"; ctx.fillRect(player.x,player.y,20,20);
+  ctx.fillStyle="red"; enemy.x+=(player.x-enemy.x)*0.02; enemy.y+=(player.y-enemy.y)*0.02; ctx.fillRect(enemy.x,enemy.y,25,25);
+  ctx.fillStyle="yellow"; coins.forEach(c=>ctx.fillRect(c.x,c.y,10,10));
   requestAnimationFrame(loop);
 }
 
@@ -374,17 +267,6 @@ document.addEventListener("keydown",(e)=>{
   if(e.key==="ArrowLeft") player.x-=10;
   if(e.key==="ArrowRight") player.x+=10;
 });
-
-/* ================= SMART TOOLS ================= */
-function tool(type){
-  let text="";
-  if(type==="focus") text="Focus 25 minutes, no distractions.";
-  if(type==="memory") text="Teach the topic out loud.";
-  if(type==="exam") text="Practice past papers.";
-  if(type==="energy") text="Drink water and move.";
-  document.getElementById("toolOutput").innerText=text;
-}
-
 </script>
 
 </body>
