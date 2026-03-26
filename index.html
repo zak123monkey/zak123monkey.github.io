@@ -124,7 +124,7 @@ button.main:hover {
 "to be is to do" — zak123monkey
 </p>
 
-<!-- ✅ COUNTER -->
+<!-- ✅ COUNTER ADDED -->
 <p style="text-align:center; font-size:18px;">
 👀 Visitors: <span id="visits">Loading...</span>
 </p>
@@ -390,17 +390,16 @@ function tool(type){
   document.getElementById("toolOutput").innerText=text;
 }
 
-/* ================= WORKING COUNTER ================= */
+/* ================= REAL COUNTER ================= */
 async function updateCounter(){
   try {
-    let res = await fetch("https://api.countapi.xyz/hit/studiq-" + window.location.hostname + "/visits");
+    let res = await fetch("https://api.countapi.xyz/hit/studiq-counter-final-001/visits");
     let data = await res.json();
     document.getElementById("visits").innerText = data.value;
   } catch {
     document.getElementById("visits").innerText = "1";
   }
 }
-
 updateCounter();
 
 </script>
