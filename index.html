@@ -1,124 +1,239 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
+<title>Studiq - Ultimate Study Platform</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Studiq - Fully Working</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
 <style>
-body{font-family:Arial;background:#0f172a;color:#fff;margin:0}
-nav{display:flex;justify-content:space-around;padding:15px;background:#111827}
-nav button{background:none;border:none;color:#ccc;font-size:16px;cursor:pointer}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
+body{
+  background: linear-gradient(135deg,#0f172a,#1e3a8a,#020617);
+  color:white;
+}
+
+nav{
+  display:flex;
+  justify-content:space-around;
+  padding:15px;
+  background:rgba(0,0,0,0.4);
+  backdrop-filter:blur(10px);
+  position:sticky;
+  top:0;
+}
+
+nav button{
+  background:none;
+  border:none;
+  color:#ccc;
+  font-size:16px;
+  cursor:pointer;
+  transition:0.3s;
+}
 nav button:hover{color:#fff}
-.page{display:none;padding:30px;text-align:center}
+
+.page{
+  display:none;
+  padding:40px;
+  max-width:1000px;
+  margin:auto;
+}
 .active{display:block}
-button.main{padding:10px 20px;margin:10px;border:none;border-radius:8px;background:#3b82f6;color:white;cursor:pointer}
-input,textarea{width:80%;padding:10px;margin:10px;border-radius:8px;border:none}
+
+.box{
+  background:rgba(255,255,255,0.08);
+  padding:25px;
+  border-radius:20px;
+  margin-top:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+  transition:0.3s;
+}
+.box:hover{transform:translateY(-3px)}
+
+h1{margin-bottom:10px}
+h2{margin-bottom:10px}
+h3{margin-bottom:10px}
+
+textarea,input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  margin-top:10px;
+  font-size:15px;
+}
+
+button.main{
+  margin-top:10px;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  background:#3b82f6;
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+button.main:hover{
+  background:#2563eb;
+  transform:scale(1.03);
+}
+
+#time{
+  font-size:40px;
+  margin-top:15px;
+}
+
+ul{margin-top:10px}
 li{margin:5px 0}
+
+.hero{
+  text-align:center;
+  margin-top:20px;
+}
+
 </style>
 </head>
+
 <body>
 
 <nav>
 <button onclick="showPage('home')">Home</button>
 <button onclick="showPage('timer')">Timer</button>
-<button onclick="showPage('planner')">Planner</button>
 <button onclick="showPage('notes')">Summarizer</button>
+<button onclick="showPage('planner')">Planner</button>
+<button onclick="showPage('tools')">Tools</button>
 </nav>
 
+<!-- HOME -->
 <div id="home" class="page active">
-<h1>Welcome to Studiq</h1>
-<p>Everything works now. Start studying.</p>
-<button class="main" onclick="showPage('timer')">Start Study</button>
-<br>
-<img src="https://c.statcounter.com/13212872/0/14c16a4e/1/">
+<div class="hero">
+<h1>Study Smarter with Studiq</h1>
+<p>All your study tools in one place.</p>
 </div>
 
+<div class="box">
+<h3>👥 Visitors</h3>
+<img src="https://api.visitorbadge.io/api/visitors?path=studiq&label=Users&countColor=%233b82f6" />
+<p style="margin-top:10px">Helping students stay focused worldwide.</p>
+</div>
+</div>
+
+<!-- TIMER -->
 <div id="timer" class="page">
-<h2>Study Timer</h2>
+<div class="box">
+<h2>⏱ Study Timer</h2>
 <input id="mins" placeholder="Enter minutes">
-<button class="main" onclick="startTimer()">Start</button>
-<button class="main" onclick="pauseTimer()">Pause</button>
-<button class="main" onclick="resetTimer()">Reset</button>
+<button class="main" onclick="startTimer()">Start Timer</button>
 <h1 id="time">00:00</h1>
 </div>
-
-<div id="planner" class="page">
-<h2>Planner</h2>
-<input id="taskInput" placeholder="Add task">
-<button class="main" onclick="addTask()">Add</button>
-<ul id="tasks"></ul>
 </div>
 
+<!-- SUMMARIZER -->
 <div id="notes" class="page">
-<h2>Summarizer</h2>
-<textarea id="text" placeholder="Paste notes"></textarea>
+<div class="box">
+<h2>🧠 Summarizer</h2>
+<textarea id="text" placeholder="Paste notes..."></textarea>
 <button class="main" onclick="summarize()">Summarize</button>
-<p id="result"></p>
+<div id="result" style="margin-top:10px"></div>
+</div>
+</div>
+
+<!-- PLANNER -->
+<div id="planner" class="page">
+<div class="box">
+<h2>📅 Planner</h2>
+<textarea id="plan" placeholder="Math, Science, English"></textarea>
+<button class="main" onclick="makePlan()">Generate Plan</button>
+<div id="planOut" style="margin-top:10px"></div>
+</div>
+</div>
+
+<!-- TOOLS -->
+<div id="tools" class="page">
+<div class="box">
+<h3>🔥 Motivation</h3>
+<button class="main" onclick="quote()">Get Motivation</button>
+<p id="quote" style="margin-top:10px"></p>
+
+<h3 style="margin-top:20px">📋 Tasks</h3>
+<input id="taskInput" placeholder="Add a task">
+<button class="main" onclick="addTask()">Add Task</button>
+<ul id="tasks"></ul>
+
+<h3 style="margin-top:20px">🎯 Goal</h3>
+<input id="goalInput" placeholder="Your goal">
+<button class="main" onclick="setGoal()">Save Goal</button>
+<p id="goal" style="margin-top:10px"></p>
+</div>
 </div>
 
 <script>
-// NAVIGATION (FIXED)
 function showPage(id){
- document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
- document.getElementById(id).classList.add('active');
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
-// TIMER (FIXED)
-let t=0, interval;
+let t,int;
 function startTimer(){
- let m=parseInt(document.getElementById('mins').value);
- if(isNaN(m)||m<=0){alert('Enter valid minutes');return;}
- t=m*60;
- clearInterval(interval);
- interval=setInterval(()=>{
-  if(t<=0){clearInterval(interval);return;}
-  t--;
-  updateTime();
- },1000);
-}
-function pauseTimer(){clearInterval(interval)}
-function resetTimer(){clearInterval(interval);t=0;updateTime();}
-function updateTime(){
- let min=Math.floor(t/60),sec=t%60;
- document.getElementById('time').innerText=`${min}:${sec<10?'0':''}${sec}`;
+  let m=document.getElementById("mins").value;
+  t=m*60;
+  clearInterval(int);
+  int=setInterval(()=>{
+    let min=Math.floor(t/60);
+    let sec=t%60;
+    document.getElementById("time").innerText=min+":"+(sec<10?"0":"")+sec;
+    t--;
+  },1000);
 }
 
-// PLANNER (WORKING + SAVES)
-let tasks=JSON.parse(localStorage.getItem('tasks')||'[]');
+function summarize(){
+  let text=document.getElementById("text").value;
+  let s=text.split(".");
+  document.getElementById("result").innerHTML=s.slice(0,3).join(".");
+}
+
+function makePlan(){
+  let t=document.getElementById("plan").value.split(",");
+  let out="";
+  t.forEach((d,i)=> out+="Day "+(i+1)+": "+d+"<br>");
+  document.getElementById("planOut").innerHTML=out;
+}
+
+let quotes=["Stay focused","Keep going","Discipline wins","Consistency matters"];
+function quote(){
+  document.getElementById("quote").innerText=
+  quotes[Math.floor(Math.random()*quotes.length)];
+}
+
+let tasks=JSON.parse(localStorage.getItem("tasks"))||[];
 function render(){
- let list=document.getElementById('tasks');
- list.innerHTML='';
- tasks.forEach((task,i)=>{
-  let li=document.createElement('li');
-  li.innerHTML=task+" <button onclick='del("+i+")'>X</button>";
-  list.appendChild(li);
- });
+  let list=document.getElementById("tasks");
+  list.innerHTML="";
+  tasks.forEach((t,i)=>{
+    list.innerHTML+=`<li>${t} <button onclick="del(${i})">X</button></li>`;
+  });
 }
 function addTask(){
- let input=document.getElementById('taskInput');
- if(!input.value) return;
- tasks.push(input.value);
- localStorage.setItem('tasks',JSON.stringify(tasks));
- input.value='';
- render();
+  let t=document.getElementById("taskInput").value;
+  tasks.push(t);
+  localStorage.setItem("tasks",JSON.stringify(tasks));
+  render();
 }
 function del(i){
- tasks.splice(i,1);
- localStorage.setItem('tasks',JSON.stringify(tasks));
- render();
+  tasks.splice(i,1);
+  localStorage.setItem("tasks",JSON.stringify(tasks));
+  render();
 }
 render();
 
-// SUMMARIZER (WORKING)
-function summarize(){
- let text=document.getElementById('text').value;
- if(!text) return;
- let sentences=text.split('.');
- document.getElementById('result').innerText=sentences.slice(0,3).join('.')+'.';
+function setGoal(){
+  let g=document.getElementById("goalInput").value;
+  localStorage.setItem("goal",g);
+  document.getElementById("goal").innerText=g;
 }
 </script>
 
-<script>
+<script type="text/javascript">
 var sc_project=13212872; 
 var sc_invisible=1; 
 var sc_security="14c16a4e"; 
