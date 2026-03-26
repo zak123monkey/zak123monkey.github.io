@@ -1,241 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-<title>Studiq - Ultimate Study Platform</title>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<title>Studiq - Ultimate Study</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg,#0f172a,#1e3a8a,#020617);
-  color: white;
-}
-
-nav {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  padding: 15px;
-  background: rgba(0,0,0,0.5);
-  position: sticky;
-  top: 0;
-}
-
-nav button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-nav button:hover {
-  color: #60a5fa;
-}
-
-.page {
-  display: none;
-  padding: 40px;
-  max-width: 1000px;
-  margin: auto;
-}
-.active { display: block; }
-
-.box {
-  background: rgba(255,255,255,0.07);
-  padding: 25px;
-  border-radius: 16px;
-  margin-top: 20px;
-  backdrop-filter: blur(10px);
-}
-
-input, textarea {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
-}
-
-button.main {
-  margin-top: 10px;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  background: #3b82f6;
-  color: white;
-  cursor: pointer;
-}
-
-button.main:hover {
-  background: #2563eb;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+body{background:#0f172a;color:#fff}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px)}
+.logo{font-size:24px;font-weight:700}
+.nav a{margin-left:20px;color:#ccc;text-decoration:none}
+.hero{padding:100px 20px;text-align:center}
+.hero h1{font-size:48px;margin-bottom:20px}
+.hero p{color:#aaa;margin-bottom:30px}
+.btn{padding:12px 24px;border:none;border-radius:10px;background:#3b82f6;color:#fff;cursor:pointer;font-weight:600}
+.card-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;padding:40px}
+.card{background:rgba(255,255,255,0.05);padding:20px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+footer{text-align:center;padding:30px;color:#777}
 </style>
 </head>
-
 <body>
 
-<nav>
-<button onclick="showPage('home')">Home</button>
-<button onclick="showPage('timer')">Timer</button>
-<button onclick="showPage('notes')">Summarizer</button>
-<button onclick="showPage('planner')">Planner</button>
-<button onclick="showPage('tools')">Tools</button>
-</nav>
-
-<!-- HOME -->
-<div id="home" class="page active">
-<h1>Studiq</h1>
-<p>Study smarter. Stay focused.</p>
-
-<div class="box">
-
-<h3>👥 Visitors:</h3>
-
-<img src="https://api.visitorbadge.io/api/visitors?path=studiq&label=Visitors&countColor=%233b82f6" />
-
-<p style="margin-top:15px; opacity:0.7;">
-Helping students stay focused worldwide 🌍
-</p>
-
+<header>
+<div class="logo">Studiq</div>
+<div class="nav">
+<a href="#">Home</a>
+<a href="#">Features</a>
+<a href="#">Premium</a>
 </div>
+</header>
+
+<section class="hero">
+<h1>Study Smarter. Not Harder.</h1>
+<p>Your ultimate study companion. Track progress, stay focused, and win.</p>
+<button class="btn">Start Studying</button>
+</section>
+
+<section class="card-container">
+<div class="card">
+<h3>Focus Timer</h3>
+<p>Stay locked in with a built-in study timer.</p>
 </div>
-
-<!-- TIMER -->
-<div id="timer" class="page">
-<div class="box">
-<h2>Study Timer</h2>
-<input id="mins" placeholder="Minutes">
-<button class="main" onclick="startTimer()">Start</button>
-<h1 id="time">00:00</h1>
+<div class="card">
+<h3>Progress Tracking</h3>
+<p>See your growth and stay motivated.</p>
 </div>
+<div class="card">
+<h3>Daily Goals</h3>
+<p>Set goals and crush them every day.</p>
 </div>
+</section>
 
-<!-- NOTES -->
-<div id="notes" class="page">
-<div class="box">
-<h2>Summarizer</h2>
-<textarea id="text"></textarea>
-<button class="main" onclick="summarize()">Summarize</button>
-<div id="result"></div>
-</div>
-</div>
+<section class="hero">
+<h2>Upgrade to Premium</h2>
+<p>No ads. Better focus. More features.</p>
+<button class="btn">Get Premium - 5 SAR</button>
+</section>
 
-<!-- PLANNER -->
-<div id="planner" class="page">
-<div class="box">
-<h2>Planner</h2>
-<textarea id="plan"></textarea>
-<button class="main" onclick="makePlan()">Generate</button>
-<div id="planOut"></div>
-</div>
-</div>
+<footer>
+<p>© 2026 Studiq. All rights reserved.</p>
+</footer>
 
-<!-- TOOLS -->
-<div id="tools" class="page">
-<div class="box">
-
-<h3>Motivation</h3>
-<button onclick="quote()">Get Quote</button>
-<p id="quote"></p>
-
-<h3>Tasks</h3>
-<input id="taskInput">
-<button onclick="addTask()">Add</button>
-<ul id="tasks"></ul>
-
-<h3>Goal</h3>
-<input id="goalInput">
-<button onclick="setGoal()">Save</button>
-<p id="goal"></p>
-
-</div>
-</div>
-
-<script>
-
-/* NAV */
-function showPage(id){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-}
-
-/* TIMER */
-let t,int;
-function startTimer(){
-  let m=document.getElementById("mins").value;
-  t=m*60;
-  clearInterval(int);
-  int=setInterval(()=>{
-    let min=Math.floor(t/60);
-    let sec=t%60;
-    document.getElementById("time").innerText=min+":"+(sec<10?"0":"")+sec;
-    t--;
-  },1000);
-}
-
-/* SUMMARIZER */
-function summarize(){
-  let text=document.getElementById("text").value;
-  let s=text.split(".");
-  document.getElementById("result").innerHTML=s.slice(0,3).join(".");
-}
-
-/* PLANNER */
-function makePlan(){
-  let t=document.getElementById("plan").value.split(",");
-  let out="";
-  t.forEach((d,i)=> out+="Day "+(i+1)+": "+d+"<br>");
-  document.getElementById("planOut").innerHTML=out;
-}
-
-/* QUOTES */
-let quotes=["Stay focused","Keep going","Discipline wins","Consistency matters"];
-function quote(){
-  document.getElementById("quote").innerText=
-  quotes[Math.floor(Math.random()*quotes.length)];
-}
-
-/* TASKS */
-let tasks=JSON.parse(localStorage.getItem("tasks"))||[];
-function render(){
-  let list=document.getElementById("tasks");
-  list.innerHTML="";
-  tasks.forEach((t,i)=>{
-    list.innerHTML+=`<li>${t} <button onclick="del(${i})">X</button></li>`;
-  });
-}
-function addTask(){
-  let t=document.getElementById("taskInput").value;
-  tasks.push(t);
-  localStorage.setItem("tasks",JSON.stringify(tasks));
-  render();
-}
-function del(i){
-  tasks.splice(i,1);
-  localStorage.setItem("tasks",JSON.stringify(tasks));
-  render();
-}
-render();
-
-/* GOAL */
-function setGoal(){
-  let g=document.getElementById("goalInput").value;
-  localStorage.setItem("goal",g);
-  document.getElementById("goal").innerText=g;
-}
-
-</script>
-
-<!-- REAL TRACKING (StatCounter) -->
+<!-- Statcounter Code -->
 <script type="text/javascript">
 var sc_project=13212872; 
 var sc_invisible=1; 
 var sc_security="14c16a4e"; 
 </script>
 <script src="https://www.statcounter.com/counter/counter.js" async></script>
+
+<!-- Google AdSense Placeholder -->
+<!-- Replace with your AdSense code when approved -->
 
 </body>
 </html>
