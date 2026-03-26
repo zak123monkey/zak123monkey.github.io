@@ -3,104 +3,118 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Studiq - Ultimate Study Platform</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<title>Studiq - Real Working App</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
-body{background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff}
-header{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);position:sticky;top:0}
-.logo{font-size:24px;font-weight:700}
-.nav a{margin-left:20px;color:#ccc;text-decoration:none}
-.nav a:hover{color:#fff}
-.hero{padding:80px 20px;text-align:center}
-.hero h1{font-size:48px;margin-bottom:20px}
-.hero p{color:#aaa;margin-bottom:30px}
-.btn{padding:14px 28px;border:none;border-radius:12px;background:#3b82f6;color:#fff;cursor:pointer;font-weight:600;transition:0.3s}
-.btn:hover{transform:scale(1.05);background:#2563eb}
-.container{max-width:1100px;margin:auto;padding:20px}
-.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-top:40px}
-.card{background:rgba(255,255,255,0.06);padding:25px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.3);transition:0.3s}
-.card:hover{transform:translateY(-5px)}
-.section{margin-top:80px}
-.section h2{text-align:center;margin-bottom:20px}
-.counter-box{background:rgba(255,255,255,0.08);padding:25px;border-radius:20px;text-align:center}
-.premium{background:linear-gradient(135deg,#3b82f6,#6366f1);padding:50px;border-radius:20px;text-align:center;margin-top:60px}
-footer{text-align:center;padding:30px;color:#aaa;margin-top:60px}
+body{font-family:Arial;background:#0f172a;color:#fff;margin:0}
+header{display:flex;justify-content:space-between;padding:20px;background:#111827}
+a{color:#ccc;margin-left:15px;cursor:pointer}
+a:hover{color:#fff}
+.section{display:none;padding:40px;text-align:center}
+.active{display:block}
+button{padding:10px 20px;margin:10px;border:none;border-radius:8px;background:#3b82f6;color:white;cursor:pointer}
+input,textarea{width:80%;padding:10px;margin:10px;border-radius:8px;border:none}
+li{margin:5px 0}
 </style>
 </head>
 <body>
 
 <header>
-<div class="logo">Studiq</div>
-<div class="nav">
-<a href="#">Home</a>
-<a href="#timer">Timer</a>
-<a href="#summarizer">Summarizer</a>
-<a href="#planner">Planner</a>
-<a href="#tools">Tools</a>
+<div>Studiq</div>
+<div>
+<a onclick="show('home')">Home</a>
+<a onclick="show('timer')">Timer</a>
+<a onclick="show('planner')">Planner</a>
+<a onclick="show('summarizer')">Summarizer</a>
 </div>
 </header>
 
-<section class="hero">
-<h1>Study Smarter. Stay Focused.</h1>
-<p>The ultimate platform to boost your productivity and win your study sessions.</p>
-<button class="btn">Start Study Session</button>
-</section>
-
-<div class="container">
-
-<div class="counter-box">
-<h3>👥 Visitors</h3>
-<div class="statcounter">
-<a href="https://statcounter.com/" target="_blank">
-<img src="https://c.statcounter.com/13212872/0/14c16a4e/1/" alt="counter">
-</a>
-</div>
-<p>Helping students stay focused worldwide 🌍</p>
+<div id="home" class="section active">
+<h1>Study Smarter</h1>
+<p>All tools actually working.</p>
+<button onclick="show('timer')">Start</button>
+<img src="https://c.statcounter.com/13212872/0/14c16a4e/1/">
 </div>
 
-<div class="section" id="tools">
-<h2>🔥 Powerful Tools</h2>
-<div class="card-grid">
-<div class="card">
-<h3>⏱ Focus Timer</h3>
-<p>Stay locked in with timed sessions.</p>
-</div>
-<div class="card">
-<h3>📄 Summarizer</h3>
-<p>Turn long text into quick notes.</p>
-</div>
-<div class="card">
-<h3>📅 Planner</h3>
-<p>Organize your tasks and goals.</p>
-</div>
-<div class="card">
-<h3>🧠 Study Tools</h3>
-<p>Everything you need in one place.</p>
-</div>
-</div>
+<div id="timer" class="section">
+<h1>Timer</h1>
+<div id="time">25:00</div>
+<button onclick="startTimer()">Start</button>
+<button onclick="pauseTimer()">Pause</button>
+<button onclick="resetTimer()">Reset</button>
 </div>
 
-<div class="section">
-<h2>🚀 Why Studiq?</h2>
-<div class="card-grid">
-<div class="card"><h3>Stay Focused</h3><p>Remove distractions and stay productive.</p></div>
-<div class="card"><h3>Track Progress</h3><p>See your improvement over time.</p></div>
-<div class="card"><h3>Build Habits</h3><p>Create daily study streaks.</p></div>
-</div>
+<div id="planner" class="section">
+<h1>Planner</h1>
+<input id="taskInput" placeholder="Task">
+<button onclick="addTask()">Add</button>
+<ul id="list"></ul>
 </div>
 
-<div class="premium">
-<h2>💎 Go Premium</h2>
-<p>No ads. Better focus. Exclusive features.</p>
-<button class="btn">Upgrade - 5 SAR</button>
+<div id="summarizer" class="section">
+<h1>Summarizer (Real basic)</h1>
+<textarea id="text" placeholder="Paste text"></textarea>
+<button onclick="summarize()">Summarize</button>
+<p id="result"></p>
 </div>
 
-</div>
+<script>
+function show(id){
+ document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+}
 
-<footer>
-<p>© 2026 Studiq. All rights reserved.</p>
-</footer>
+// TIMER (real working)
+let t=1500, interval;
+function startTimer(){
+ clearInterval(interval);
+ interval=setInterval(()=>{
+  if(t<=0) return;
+  t--;
+  updateTime();
+ },1000);
+}
+function pauseTimer(){clearInterval(interval)}
+function resetTimer(){t=1500;updateTime();clearInterval(interval)}
+function updateTime(){
+ let m=Math.floor(t/60),s=t%60;
+ document.getElementById('time').innerText=`${m}:${s<10?'0':''}${s}`;
+}
+
+// PLANNER (SAVES DATA)
+function loadTasks(){
+ let tasks=JSON.parse(localStorage.getItem('tasks')||'[]');
+ let list=document.getElementById('list');
+ list.innerHTML='';
+ tasks.forEach((task,i)=>{
+  let li=document.createElement('li');
+  li.innerText=task;
+  li.onclick=()=>deleteTask(i);
+  list.appendChild(li);
+ });
+}
+function addTask(){
+ let input=document.getElementById('taskInput');
+ let tasks=JSON.parse(localStorage.getItem('tasks')||'[]');
+ tasks.push(input.value);
+ localStorage.setItem('tasks',JSON.stringify(tasks));
+ input.value='';
+ loadTasks();
+}
+function deleteTask(i){
+ let tasks=JSON.parse(localStorage.getItem('tasks'));
+ tasks.splice(i,1);
+ localStorage.setItem('tasks',JSON.stringify(tasks));
+ loadTasks();
+}
+loadTasks();
+
+// SUMMARIZER (better logic)
+function summarize(){
+ let text=document.getElementById('text').value;
+ let sentences=text.split('.');
+ document.getElementById('result').innerText=sentences.slice(0,3).join('.')+'.';
+}
+</script>
 
 <script>
 var sc_project=13212872; 
