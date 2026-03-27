@@ -18,7 +18,6 @@ nav {
   justify-content: space-around;
   padding: 15px;
   background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(10px);
 }
 
 nav button {
@@ -29,30 +28,14 @@ nav button {
   cursor: pointer;
 }
 
-.page {
-  display: none;
-  padding: 40px;
-  max-width: 1000px;
-  margin: auto;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 0.3s ease;
-}
-
-.page.active {
-  display: block;
-  opacity: 1;
-  transform: translateY(0);
-}
+.page { display:none; padding:40px; max-width:1000px; margin:auto; }
+.page.active { display:block; }
 
 .box {
   background: rgba(255,255,255,0.08);
   padding: 25px;
   border-radius: 20px;
   margin-top: 20px;
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
 }
 
 textarea, input {
@@ -61,19 +44,6 @@ textarea, input {
   border-radius: 10px;
   border: none;
   margin-top: 10px;
-}
-
-button {
-  transition: all 0.2s ease;
-}
-
-button:hover {
-  transform: translateY(-2px);
-  opacity: 0.9;
-}
-
-button:active {
-  transform: scale(0.96);
 }
 
 button.main {
@@ -86,55 +56,22 @@ button.main {
   cursor: pointer;
 }
 
-#time {
-  font-size: 48px;
-  text-align: center;
-  margin-top: 15px;
-}
+#time { font-size:48px; text-align:center; }
 
-.progress {
-  height: 6px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 10px;
-  margin-top: 10px;
-}
-
-.progress-bar {
-  height: 100%;
-  width: 0%;
-  background: #22c55e;
-  transition: width 0.3s linear;
-}
-
-/* Toast */
-#toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.7);
-  padding: 10px 20px;
-  border-radius: 10px;
-  display: none;
-}
+.progress { height:6px; background:#333; }
+.progress-bar { height:100%; width:0%; background:#22c55e; }
 
 /* GAME */
-#gameCanvas {
-  background: linear-gradient(#4facfe,#00f2fe);
-  display: block;
-  margin: auto;
-}
+#gameCanvas { display:block; margin:auto; }
 
 #gameUI {
   position:absolute;
   inset:0;
   display:flex;
-  flex-direction:column;
   justify-content:center;
   align-items:center;
-  font-size:24px;
+  flex-direction:column;
 }
-
 </style>
 </head>
 
@@ -151,22 +88,206 @@ button.main {
 <!-- HOME -->
 <div id="home" class="page active">
 <h1>Welcome to Studify</h1>
-<p style="text-align:center; opacity:0.8;">Your all-in-one study system</p>
 
 <div class="box">
 <h2>📊 Dashboard</h2>
-<p>🔥 Streak: <span id="dashStreak">0</span></p>
-<p>📋 Tasks: <span id="taskCount">0</span></p>
-<p>🎯 Goal: <span id="dashGoal">None</span></p>
-<button class="main" onclick="showPage('timer')">▶ Start Study Session</button>
+<p>🔥 Streak: <span id="dashStreak"></span></p>
+<p>📋 Tasks: <span id="taskCount"></span></p>
+<button class="main" onclick="showPage('timer')">Start Study</button>
 </div>
 
 <div class="box">
 <p>All-in-one study system to help you focus and improve daily.</p>
 </div>
 
-<div class="box" style="text-align:center;">
-<h3>⚠️ Found a problem?</h3>
-<a href="mailto:zmal4525@gmail.com">📩 Email Support</a>
+<div class="box">
+<a href="mailto:zmal4525@gmail.com">📩 Contact Support</a>
 </div>
 </div>
+
+<!-- TIMER -->
+<div id="timer" class="page">
+<div class="box">
+<input id="mins">
+<button onclick="startTimer()">Start</button>
+<h1 id="time">00:00</h1>
+<div class="progress"><div id="bar" class="progress-bar"></div></div>
+</div>
+</div>
+
+<!-- NOTES -->
+<div id="notes" class="page">
+<div class="box">
+<textarea id="text"></textarea>
+<button onclick="summarize()">Summarize</button>
+<p id="result"></p>
+</div>
+</div>
+
+<!-- PLANNER -->
+<div id="planner" class="page">
+<div class="box">
+<textarea id="plan"></textarea>
+<button onclick="makePlan()">Generate</button>
+<p id="planOut"></p>
+</div>
+</div>
+
+<!-- TOOLS -->
+<div id="tools" class="page">
+<div class="box">
+
+<input id="taskInput">
+<button onclick="addTask()">Add</button>
+<ul id="tasks"></ul>
+
+<button onclick="openGame()">Play Game</button>
+
+</div>
+</div>
+
+<!-- GAME -->
+<div id="gameScreen" style="display:none; position:fixed; inset:0; background:black;">
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+
+<div id="gameUI">
+<div id="gameText">Start Game</div>
+<button onclick="startGame()">Start</button>
+</div>
+
+<button onclick="closeGame()" style="position:absolute;top:10px;right:10px;">Exit</button>
+</div>
+
+<script>
+
+/* NAV */
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+/* DASHBOARD */
+function updateDashboard(){
+  dashStreak.innerText=localStorage.streak||0;
+  taskCount.innerText=JSON.parse(localStorage.tasks||"[]").length;
+}
+updateDashboard();
+
+/* TIMER */
+let timer;
+function startTimer(){
+  let m=parseInt(mins.value);
+  if(!m) return;
+
+  let t=m*60,l=t;
+  clearInterval(timer);
+
+  timer=setInterval(()=>{
+    l--;
+    time.innerText=Math.floor(l/60)+":"+("0"+l%60).slice(-2);
+    bar.style.width=((t-l)/t)*100+"%";
+    if(l<=0) clearInterval(timer);
+  },1000);
+}
+
+/* TASKS */
+let tasks=JSON.parse(localStorage.tasks||"[]");
+function renderTasks(){
+  tasksEl.innerHTML="";
+  tasks.forEach((t,i)=>{
+    tasksEl.innerHTML+=`<li>${t}</li>`;
+  });
+}
+function addTask(){
+  if(!taskInput.value.trim()) return;
+  tasks.push(taskInput.value);
+  localStorage.tasks=JSON.stringify(tasks);
+  taskInput.value="";
+  renderTasks();
+  updateDashboard();
+}
+renderTasks();
+
+/* GAME */
+let ctx=gameCanvas.getContext("2d");
+let bird, pipes, velocity, gravity, running, frame;
+
+function openGame(){
+  gameScreen.style.display="block";
+  resetGame();
+}
+
+function closeGame(){
+  gameScreen.style.display="none";
+  running=false;
+}
+
+function resetGame(){
+  bird={x:100,y:250,size:20};
+  pipes=[];
+  velocity=0;
+  gravity=0.5;
+  running=false;
+  frame=0;
+  draw();
+}
+
+function startGame(){
+  running=true;
+  loop();
+}
+
+function loop(){
+  if(!running) return;
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+function update(){
+  frame++;
+  velocity+=gravity;
+  bird.y+=velocity;
+
+  if(frame%90===0){
+    let gap=150;
+    let top=Math.random()*300+50;
+    pipes.push({x:800,top,bottom:top+gap});
+  }
+
+  pipes.forEach(p=>{
+    p.x-=3;
+    if(
+      bird.x<p.x+50 &&
+      bird.x+20>p.x &&
+      (bird.y<p.top||bird.y+20>p.bottom)
+    ){
+      running=false;
+    }
+  });
+}
+
+function draw(){
+  ctx.fillStyle="#70c5ce";
+  ctx.fillRect(0,0,800,600);
+
+  ctx.fillStyle="yellow";
+  ctx.fillRect(bird.x,bird.y,20,20);
+
+  ctx.fillStyle="green";
+  pipes.forEach(p=>{
+    ctx.fillRect(p.x,0,50,p.top);
+    ctx.fillRect(p.x,p.bottom,50,600);
+  });
+}
+
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space") velocity=-8;
+});
+
+gameCanvas.addEventListener("click",()=>velocity=-8);
+
+</script>
+
+</body>
+</html>
