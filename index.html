@@ -7,10 +7,10 @@
 
 <style>
 body {
-  margin:0;
-  font-family:Arial;
-  background:linear-gradient(135deg,#2c003e,#a83279,#ff6a3d);
-  color:white;
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(135deg,#2c003e,#a83279,#ff6a3d);
+  color: white;
 }
 
 nav {
@@ -20,7 +20,15 @@ nav {
   background:rgba(0,0,0,0.4);
 }
 
-.page { display:none; padding:30px; }
+button { cursor:pointer; }
+
+.page {
+  display:none;
+  padding:40px;
+  max-width:1000px;
+  margin:auto;
+}
+
 .page.active { display:block; }
 
 .box {
@@ -36,10 +44,24 @@ input,textarea {
   margin-top:10px;
 }
 
-button.main { margin-top:10px; padding:10px; }
+button.main {
+  margin-top:10px;
+  padding:10px;
+}
 
-.progress { height:6px; background:#333; }
+.progress { height:6px; background:#333; margin-top:10px; }
 .progress-bar { height:100%; width:0%; background:lime; }
+
+/* Toast */
+#toast {
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:black;
+  padding:10px;
+  display:none;
+}
 
 /* GAME */
 #gameCanvas {
@@ -67,17 +89,25 @@ button.main { margin-top:10px; padding:10px; }
 <nav>
 <button onclick="showPage('home')">Home</button>
 <button onclick="showPage('timer')">Timer</button>
+<button onclick="showPage('notes')">Summarizer</button>
+<button onclick="showPage('planner')">Planner</button>
 <button onclick="showPage('tools')">Tools</button>
 </nav>
 
+<!-- HOME -->
 <div id="home" class="page active">
 <h1>Studiq</h1>
+
 <div class="box">
-<p>Streak: <span id="streak"></span></p>
+<h2>Dashboard</h2>
+<p>Streak: <span id="dashStreak"></span></p>
 <p>Tasks: <span id="taskCount"></span></p>
+<p>Goal: <span id="dashGoal"></span></p>
+<button class="main" onclick="showPage('timer')">Start Study</button>
 </div>
 </div>
 
+<!-- TIMER -->
 <div id="timer" class="page">
 <div class="box">
 <input id="mins">
@@ -87,13 +117,42 @@ button.main { margin-top:10px; padding:10px; }
 </div>
 </div>
 
+<!-- NOTES -->
+<div id="notes" class="page">
+<div class="box">
+<textarea id="text"></textarea>
+<button onclick="summarize()">Summarize</button>
+<button onclick="copySummary()">Copy</button>
+<p id="result"></p>
+</div>
+</div>
+
+<!-- PLANNER -->
+<div id="planner" class="page">
+<div class="box">
+<textarea id="plan"></textarea>
+<button onclick="makePlan()">Generate</button>
+<p id="planOut"></p>
+</div>
+</div>
+
+<!-- TOOLS -->
 <div id="tools" class="page">
 <div class="box">
+
+<button onclick="quote()">Quote</button>
+<p id="quote"></p>
+
 <input id="taskInput">
 <button onclick="addTask()">Add Task</button>
 <ul id="tasks"></ul>
 
+<input id="goalInput">
+<button onclick="setGoal()">Save Goal</button>
+<p id="goal"></p>
+
 <button onclick="openGame()">Play Game</button>
+
 </div>
 </div>
 
@@ -102,12 +161,14 @@ button.main { margin-top:10px; padding:10px; }
 <canvas id="gameCanvas" width="800" height="600"></canvas>
 
 <div id="gameUI">
-<div id="gameText">Click Start</div>
-<button onclick="startGame()">Start Game</button>
+<div id="gameText">Press Start</div>
+<button onclick="startGame()">Start</button>
 </div>
 
 <button onclick="closeGame()" style="position:absolute;top:10px;right:10px;">Exit</button>
 </div>
+
+<div id="toast"></div>
 
 <script>
 
@@ -117,131 +178,167 @@ function showPage(id){
   document.getElementById(id).classList.add("active");
 }
 
+/* DASHBOARD */
+function updateDashboard(){
+  dashStreak.innerText=localStorage.streak||0;
+  taskCount.innerText=JSON.parse(localStorage.tasks||"[]").length;
+  dashGoal.innerText=localStorage.goal||"None";
+}
+updateDashboard();
+
+/* TOAST */
+function showToast(t){
+  toast.innerText=t;
+  toast.style.display="block";
+  setTimeout(()=>toast.style.display="none",2000);
+}
+
 /* TIMER */
 let timer;
 function startTimer(){
   let m=parseInt(mins.value);
   if(!m) return;
-
-  let total=m*60, left=total;
-
+  let t=m*60,l=t;
   clearInterval(timer);
-
   timer=setInterval(()=>{
-    left--;
-    let mm=Math.floor(left/60);
-    let ss=left%60;
-
-    time.innerText=`${mm}:${("0"+ss).slice(-2)}`;
-    bar.style.width=((total-left)/total)*100+"%";
-
-    if(left<=0) clearInterval(timer);
+    l--;
+    time.innerText=Math.floor(l/60)+":"+("0"+l%60).slice(-2);
+    bar.style.width=((t-l)/t)*100+"%";
+    if(l<=0) clearInterval(timer);
   },1000);
 }
 
+/* SUMMARIZER */
+function summarize(){
+  result.innerText=text.value.split(". ").slice(0,3).join(". ");
+}
+function copySummary(){navigator.clipboard.writeText(result.innerText);}
+
+/* PLANNER */
+function makePlan(){
+  planOut.innerHTML=plan.value.split(",").map((s,i)=>"Day "+(i+1)+": "+s).join("<br>");
+}
+
 /* TASKS */
-let tasks=[];
+let tasks=JSON.parse(localStorage.tasks||"[]");
 function renderTasks(){
   tasksEl.innerHTML="";
-  tasks.forEach((t,i)=>{
-    tasksEl.innerHTML+=`<li>${t}</li>`;
-  });
+  tasks.forEach((t,i)=>tasksEl.innerHTML+=`<li>${t} <button onclick="delTask(${i})">❌</button></li>`);
 }
 function addTask(){
   if(!taskInput.value.trim()) return;
   tasks.push(taskInput.value);
+  localStorage.tasks=JSON.stringify(tasks);
   taskInput.value="";
   renderTasks();
+  updateDashboard();
+  showToast("Task added");
+}
+function delTask(i){
+  tasks.splice(i,1);
+  localStorage.tasks=JSON.stringify(tasks);
+  renderTasks();
+  updateDashboard();
+}
+renderTasks();
+
+/* GOAL */
+goal.innerText=localStorage.goal||"";
+function setGoal(){
+  localStorage.goal=goalInput.value;
+  goal.innerText=goalInput.value;
+  updateDashboard();
+  showToast("Goal saved");
 }
 
-/* ===== WORKING FLAPPY BIRD ===== */
+/* STREAK */
+let today=new Date().toDateString();
+let last=localStorage.last;
+if(last!==today){
+  let s=parseInt(localStorage.streak||0);
+  let y=new Date(); y.setDate(y.getDate()-1);
+  s=(last===y.toDateString())?s+1:1;
+  localStorage.streak=s;
+  localStorage.last=today;
+}
+updateDashboard();
 
-let canvas=document.getElementById("gameCanvas");
-let ctx=canvas.getContext("2d");
+/* QUOTE */
+function quote(){
+  let q=["Stay focused","Keep going","You got this"];
+  quoteEl.innerText=q[Math.floor(Math.random()*q.length)];
+}
 
-let bird, pipes, velocity, gravity, running, frame;
+/* ===== FLAPPY BIRD FIXED ===== */
+let ctx=gameCanvas.getContext("2d");
+
+let bird,pipes,vel,grav,score,run,loopId;
 
 function openGame(){
   gameScreen.style.display="block";
-  initGame();
+  resetGame();
 }
 
 function closeGame(){
   gameScreen.style.display="none";
-  running=false;
+  cancelAnimationFrame(loopId);
+  run=false;
 }
 
-/* INIT */
-function initGame(){
+function resetGame(){
   bird={x:100,y:250,size:20};
   pipes=[];
-  velocity=0;
-  gravity=0.5;
-  running=false;
-  frame=0;
+  vel=0;
+  grav=0.5;
+  score=0;
+  run=false;
 
-  draw(); // draw instantly
+  gameUI.style.display="flex";
+  gameText.innerText="Press Start";
+
+  draw(); // ✅ FIX (prevents black screen)
 }
 
-/* START */
 function startGame(){
-  running=true;
+  run=true;
   gameUI.style.display="none";
   loop();
 }
 
-/* LOOP */
 function loop(){
-  if(!running) return;
-
+  if(!run) return;
   update();
   draw();
-
-  requestAnimationFrame(loop);
+  loopId=requestAnimationFrame(loop);
 }
 
-/* UPDATE */
 function update(){
-  frame++;
+  vel+=grav;
+  bird.y+=vel;
 
-  velocity+=gravity;
-  bird.y+=velocity;
-
-  if(frame % 90 === 0){
+  if(pipes.length===0||pipes[pipes.length-1].x<500){
     let gap=150;
     let top=Math.random()*300+50;
-
-    pipes.push({
-      x:800,
-      top:top,
-      bottom:top+gap
-    });
+    pipes.push({x:800,top,bottom:top+gap});
   }
 
   pipes.forEach(p=>{
     p.x-=3;
 
     if(
-      bird.x < p.x+50 &&
-      bird.x+20 > p.x &&
-      (bird.y < p.top || bird.y+20 > p.bottom)
+      bird.x<p.x+50 &&
+      bird.x+20>p.x &&
+      (bird.y<p.top||bird.y+20>p.bottom)
     ){
-      running=false;
-      gameUI.style.display="flex";
-      gameText.innerText="Game Over";
+      endGame();
     }
   });
 
-  if(bird.y>600 || bird.y<0){
-    running=false;
-    gameUI.style.display="flex";
-    gameText.innerText="Game Over";
-  }
+  if(bird.y>600||bird.y<0) endGame();
 }
 
-/* DRAW */
 function draw(){
-  ctx.fillStyle="#70c5ce";
+  ctx.fillStyle="#70c5ce"; // sky (fix black look)
   ctx.fillRect(0,0,800,600);
 
   ctx.fillStyle="yellow";
@@ -252,20 +349,23 @@ function draw(){
     ctx.fillRect(p.x,0,50,p.top);
     ctx.fillRect(p.x,p.bottom,50,600);
   });
+
+  ctx.fillStyle="white";
+  ctx.fillText("Score: "+score,20,20);
 }
 
-/* CONTROLS */
 document.addEventListener("keydown",e=>{
-  if(e.code==="Space" && running){
-    velocity=-8;
-  }
+  if(e.code==="Space"&&run) vel=-8;
 });
 
-canvas.addEventListener("click",()=>{
-  if(running){
-    velocity=-8;
-  }
-});
+gameCanvas.addEventListener("click",()=>{ if(run) vel=-8; });
+
+function endGame(){
+  run=false;
+  cancelAnimationFrame(loopId);
+  gameUI.style.display="flex";
+  gameText.innerText="Game Over";
+}
 
 </script>
 
