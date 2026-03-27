@@ -1,70 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Studiq</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ✅ AdSense Script -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXX"
+     crossorigin="anonymous"></script>
 
 <style>
 body {
   margin: 0;
   font-family: Arial;
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
   color: white;
-
-  /* Dragon aesthetic */
-  background: radial-gradient(circle at 30% 30%, #1e293b, #020617 80%);
-  overflow: hidden;
-}
-
-/* subtle dragon glow */
-body::before {
-  content: "";
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background: url('https://i.imgur.com/7b1ZQ0g.png');
-  opacity: 0.07;
-  background-size: cover;
-  pointer-events: none;
 }
 
 nav {
   display: flex;
-  justify-content: space-around;
-  padding: 12px;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(10px);
+  justify-content: center;
+  gap: 20px;
+  padding: 15px;
+  background: rgba(0,0,0,0.4);
 }
 
-button {
-  padding: 10px;
+nav button {
+  padding: 10px 15px;
   border: none;
-  border-radius: 6px;
   background: #1e3a8a;
   color: white;
+  border-radius: 6px;
   cursor: pointer;
 }
 
-.page {
-  display: none;
-  padding: 20px;
+.container {
+  padding: 30px;
 }
 
-.active {
-  display: block;
-}
-
-.box {
-  background: rgba(255,255,255,0.08);
+.card {
+  background: rgba(255,255,255,0.1);
   padding: 20px;
   border-radius: 12px;
   margin-top: 20px;
-}
-
-/* canvas */
-canvas {
-  background: #000;
-  display: block;
-  margin: auto;
 }
 </style>
 </head>
@@ -73,82 +50,96 @@ canvas {
 
 <nav>
 <button onclick="show('home')">Home</button>
-<button onclick="show('tools')">Study Tools</button>
-<button onclick="show('game')">Flappy Bird</button>
+<button onclick="show('timer')">Timer</button>
+<button onclick="show('planner')">Planner</button>
+<button onclick="show('tools')">Tools</button>
 </nav>
 
+<div class="container">
+
 <!-- HOME -->
-<div id="home" class="page active">
+<div id="home">
 <h1>Studiq</h1>
 <p>Study smarter. Stay focused.</p>
-<p id="quote"></p>
+
+<div class="card">
+<h3>Visitors</h3>
+<p id="visits">Loading...</p>
 </div>
 
-<!-- TOOLS -->
-<div id="tools" class="page">
-<div class="box">
+<!-- ✅ AD UNIT -->
+<div class="card">
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-XXXXXXXXXXXX"
+     data-ad-slot="1234567890"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+</div>
+
+</div>
+
+<!-- TIMER -->
+<div id="timer" style="display:none">
+<div class="card">
 <h3>Pomodoro Timer</h3>
-<p id="timer">25:00</p>
+<p id="time">25:00</p>
 <button onclick="startTimer()">Start</button>
 <button onclick="resetTimer()">Reset</button>
 </div>
+</div>
 
-<div class="box">
+<!-- PLANNER -->
+<div id="planner" style="display:none">
+<div class="card">
 <h3>Task Planner</h3>
-<input id="taskInput" placeholder="Add task">
+<input id="taskInput" placeholder="Enter task">
 <button onclick="addTask()">Add</button>
 <ul id="tasks"></ul>
 </div>
+</div>
 
-<div class="box">
+<!-- TOOLS -->
+<div id="tools" style="display:none">
+<div class="card">
 <h3>Text Tools</h3>
-<input id="textInput" placeholder="Enter text">
-<br><br>
+<input id="textInput" placeholder="Enter text"><br><br>
 <button onclick="upper()">UPPERCASE</button>
 <button onclick="lower()">lowercase</button>
-<button onclick="reverse()">Reverse</button>
-<p id="textOutput"></p>
+<p id="output"></p>
 </div>
 </div>
 
-<!-- GAME -->
-<div id="game" class="page">
-<div class="box">
-<h3>Flappy Bird</h3>
-<canvas id="gameCanvas" width="320" height="400"></canvas>
-<p>Score: <span id="score">0</span></p>
-<p>Press SPACE to jump</p>
-</div>
 </div>
 
 <script>
 function show(id){
- document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
- document.getElementById(id).classList.add('active');
+ document.getElementById('home').style.display='none';
+ document.getElementById('timer').style.display='none';
+ document.getElementById('planner').style.display='none';
+ document.getElementById('tools').style.display='none';
+
+ document.getElementById(id).style.display='block';
 }
 
-/* QUOTE */
-let quotes = [
-"Discipline beats motivation",
-"Stay focused. No excuses.",
-"Small steps every day",
-"Win the day"
-];
-document.getElementById("quote").innerText =
-quotes[Math.floor(Math.random()*quotes.length)];
+/* VISITOR COUNTER (simple) */
+let count = localStorage.getItem("visits") || 0;
+count++;
+localStorage.setItem("visits", count);
+document.getElementById("visits").innerText = count;
 
 /* TIMER */
-let time = 1500;
+let t = 1500;
 let interval;
 
 function startTimer(){
  clearInterval(interval);
  interval = setInterval(()=>{
-  if(time > 0){
-    time--;
-    let m = Math.floor(time/60);
-    let s = time%60;
-    document.getElementById("timer").innerText =
+  if(t>0){
+    t--;
+    let m=Math.floor(t/60);
+    let s=t%60;
+    document.getElementById("time").innerText =
     m+":"+(s<10?"0":"")+s;
   }
  },1000);
@@ -156,108 +147,32 @@ function startTimer(){
 
 function resetTimer(){
  clearInterval(interval);
- time = 1500;
- document.getElementById("timer").innerText = "25:00";
+ t=1500;
+ document.getElementById("time").innerText="25:00";
 }
 
 /* TASKS */
 function addTask(){
- let input = document.getElementById("taskInput");
- let li = document.createElement("li");
- li.innerText = input.value;
- li.onclick = ()=> li.remove();
+ let input=document.getElementById("taskInput");
+ let li=document.createElement("li");
+ li.innerText=input.value;
+ li.onclick=()=>li.remove();
  document.getElementById("tasks").appendChild(li);
  input.value="";
 }
 
 /* TEXT TOOLS */
 function upper(){
- document.getElementById("textOutput").innerText =
+ document.getElementById("output").innerText =
  document.getElementById("textInput").value.toUpperCase();
 }
 function lower(){
- document.getElementById("textOutput").innerText =
+ document.getElementById("output").innerText =
  document.getElementById("textInput").value.toLowerCase();
 }
-function reverse(){
- document.getElementById("textOutput").innerText =
- document.getElementById("textInput").value.split('').reverse().join('');
-}
 
-/* FLAPPY BIRD (REAL FIXED VERSION) */
-let canvas = document.getElementById("gameCanvas");
-let ctx = canvas.getContext("2d");
-
-let bird = {x:50,y:150,vy:0};
-let gravity = 0.5;
-let pipes = [];
-let score = 0;
-
-document.addEventListener("keydown", e=>{
- if(e.code==="Space"){
-   bird.vy = -8;
- }
-});
-
-function update(){
- bird.vy += gravity;
- bird.y += bird.vy;
-
- if(bird.y > 400) resetGame();
-
- if(Math.random()<0.02){
-  let top = Math.random()*200;
-  pipes.push({x:320,top:top,bottom:top+120});
- }
-
- pipes.forEach(p=>{
-  p.x -= 2;
-
-  // collision
-  if(
-   bird.x < p.x+40 &&
-   bird.x+20 > p.x &&
-   (bird.y < p.top || bird.y+20 > p.bottom)
-  ){
-    resetGame();
-  }
-
-  if(p.x === 50) score++;
- });
-
- pipes = pipes.filter(p=>p.x>-40);
- document.getElementById("score").innerText = score;
-}
-
-function draw(){
- ctx.clearRect(0,0,320,400);
-
- // bird
- ctx.fillStyle="yellow";
- ctx.fillRect(bird.x,bird.y,20,20);
-
- // pipes
- ctx.fillStyle="lime";
- pipes.forEach(p=>{
-  ctx.fillRect(p.x,0,40,p.top);
-  ctx.fillRect(p.x,p.bottom,40,400);
- });
-}
-
-function loop(){
- update();
- draw();
- requestAnimationFrame(loop);
-}
-
-function resetGame(){
- bird.y = 150;
- bird.vy = 0;
- pipes = [];
- score = 0;
-}
-
-loop();
+/* LOAD ADS */
+(adsbygoogle = window.adsbygoogle || []).push({});
 </script>
 
 </body>
