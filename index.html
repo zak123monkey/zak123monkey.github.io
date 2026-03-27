@@ -63,17 +63,37 @@ button.main {
 .progress-bar { height: 100%; width: 0%; background: #22c55e; }
 
 #gameCanvas { background: black; display: block; margin: auto; }
+
+.contact-container {
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.contact-container a {
+  color: #3498db;
+  font-size: 18px;
+  text-decoration: none;
+}
+
+.contact-container a:hover {
+  text-decoration: underline;
+}
 </style>
 </head>
 
 <body>
 
-<!-- 🔥 ADSENSE (PUT YOUR CODE HERE) -->
-<div style="text-align:center; margin-top:10px;">
-  <!-- Replace this with your AdSense code -->
-  <p>Ad space</p>
+<!-- ADDITIONAL CONTACT SECTION -->
+<div class="contact-container">
+  <h3>Need Help? Contact Us!</h3>
+  <p>If you're having issues, feel free to reach out to us directly via email. Just click below to send us a message:</p>
+  <a href="mailto:zmal4525@gmail.com?subject=Studiq%20Help%20Request&body=Please%20describe%20the%20issue%20you%20encountered.%20">Contact Support</a>
 </div>
 
+<!-- NAVIGATION -->
 <nav>
 <button onclick="showPage('home')">Home</button>
 <button onclick="showPage('timer')">Timer</button>
@@ -82,6 +102,7 @@ button.main {
 <button onclick="showPage('tools')">Tools</button>
 </nav>
 
+<!-- HOME -->
 <div id="home" class="page active">
 <h1>Welcome to Studiq</h1>
 <p style="text-align:center;">"to be is to do" — zak123monkey</p>
@@ -94,6 +115,7 @@ button.main {
 </div>
 </div>
 
+<!-- TIMER -->
 <div id="timer" class="page">
 <div class="box">
 <h2>⏱ Study Timer</h2>
@@ -104,6 +126,7 @@ button.main {
 </div>
 </div>
 
+<!-- NOTES -->
 <div id="notes" class="page">
 <div class="box">
 <h2>🧠 Smart Summarizer</h2>
@@ -113,6 +136,7 @@ button.main {
 </div>
 </div>
 
+<!-- PLANNER -->
 <div id="planner" class="page">
 <div class="box">
 <h2>📅 Planner</h2>
@@ -122,6 +146,7 @@ button.main {
 </div>
 </div>
 
+<!-- TOOLS -->
 <div id="tools" class="page">
 <div class="box">
 <h3>💬 Motivation</h3>
@@ -155,7 +180,7 @@ function showPage(id){
   document.getElementById(id).classList.add("active");
 }
 
-// TIMER (FIXED)
+// TIMER
 let t,int,total;
 function startTimer(){
   let m=parseInt(document.getElementById("mins").value);
