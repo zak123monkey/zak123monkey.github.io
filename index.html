@@ -1,60 +1,258 @@
-EventListener("keypress",e=>{
-  if(e.key==="Enter") addTask();
-});
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studify</title>
 
-renderTasks();
-
-/* GOAL */
-goal.innerText=localStorage.goal||"";
-function setGoal(){
-  localStorage.goal=goalInput.value;
-  goal.innerText=goalInput.value;
-  updateDashboard();
-  showToast("Goal saved");
+<style>
+body {
+  margin: 0;
+  font-family: 'Inter', Arial, sans-serif;
+  background: linear-gradient(135deg, #2c003e, #5a0f4d, #a83279, #ff6a3d);
+  color: white;
 }
 
-/* STREAK */
-let today=new Date().toDateString();
-let last=localStorage.last;
+nav {
+  display: flex;
+  justify-content: space-around;
+  padding: 15px;
+  background: rgba(0,0,0,0.4);
+}
 
-if(last!==today){
-  let s=parseInt(localStorage.streak||"0");
-  let y=new Date(); y.setDate(y.getDate()-1);
-  s=(last===y.toDateString())?s+1:1;
-  localStorage.streak=s;
-  localStorage.last=today;
+nav button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.page { display:none; padding:40px; max-width:1000px; margin:auto; }
+.page.active { display:block; }
+
+.box {
+  background: rgba(255,255,255,0.08);
+  padding: 25px;
+  border-radius: 20px;
+  margin-top: 20px;
+}
+
+textarea, input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  margin-top: 10px;
+}
+
+button.main {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg,#3b82f6,#6366f1);
+  color: white;
+}
+
+#time { font-size:48px; text-align:center; }
+
+.progress { height:6px; background:#333; }
+.progress-bar { height:100%; width:0%; background:#22c55e; }
+
+/* GAME */
+#gameCanvas { display:block; margin:auto; }
+
+#gameUI {
+  position:absolute;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+<button onclick="showPage('home')">Home</button>
+<button onclick="showPage('timer')">Timer</button>
+<button onclick="showPage('notes')">Summarizer</button>
+<button onclick="showPage('planner')">Planner</button>
+<button onclick="showPage('tools')">Tools</button>
+</nav>
+
+<!-- HOME -->
+<div id="home" class="page active">
+<h1>Welcome to Studify</h1>
+
+<div class="box">
+<h2>📊 Dashboard</h2>
+<p>🔥 Streak: <span id="dashStreak"></span></p>
+</div>
+
+<div class="box">
+<p>All-in-one study system to help you focus and improve daily.</p>
+</div>
+
+<div class="box">
+<a href="mailto:zmal4525@gmail.com">📩 Contact Support</a>
+</div>
+</div>
+
+<!-- TIMER -->
+<div id="timer" class="page">
+<div class="box">
+<input id="mins">
+<button onclick="startTimer()">Start</button>
+<h1 id="time">00:00</h1>
+<div class="progress"><div id="bar" class="progress-bar"></div></div>
+</div>
+</div>
+
+<!-- SUMMARIZER -->
+<div id="notes" class="page">
+<div class="box">
+<h2>🧠 Smart Summarizer</h2>
+
+<p style="opacity:0.7; font-size:14px;">
+Example: Photosynthesis is the process by which plants make food using sunlight. It occurs in chloroplasts. It produces oxygen as a byproduct.
+</p>
+
+<textarea id="text" placeholder="Paste notes here..."></textarea>
+<button onclick="summarize()">Summarize</button>
+<p id="result"></p>
+</div>
+</div>
+
+<!-- PLANNER -->
+<div id="planner" class="page">
+<div class="box">
+<h2>📅 Planner</h2>
+
+<p style="opacity:0.7; font-size:14px;">
+Example: Math, Science, English, History
+</p>
+
+<textarea id="plan" placeholder="Enter subjects separated by commas..."></textarea>
+<button onclick="makePlan()">Generate</button>
+<p id="planOut"></p>
+</div>
+</div>
+
+<!-- TOOLS -->
+<div id="tools" class="page">
+<div class="box">
+
+<input id="taskInput">
+<button onclick="addTask()">Add</button>
+<ul id="tasks"></ul>
+
+<button onclick="openGame()">Play Game</button>
+
+</div>
+</div>
+
+<!-- GAME -->
+<div id="gameScreen" style="display:none; position:fixed; inset:0; background:black;">
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+
+<div id="gameUI">
+<div id="gameText">Start Game</div>
+<button onclick="startGame()">Start</button>
+</div>
+
+<button onclick="closeGame()" style="position:absolute;top:10px;right:10px;">Exit</button>
+</div>
+
+<script>
+
+/* NAV */
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+/* DASHBOARD */
+function updateDashboard(){
+  document.getElementById("dashStreak").innerText=localStorage.streak||0;
 }
 updateDashboard();
 
-/* QUOTE */
-function quote(){
-  let q=["Stay focused","Keep going","Discipline wins","You got this"];
-  quoteEl.innerText=q[Math.floor(Math.random()*q.length)];
+/* TIMER */
+let timer;
+function startTimer(){
+  let m=parseInt(document.getElementById("mins").value);
+  if(!m) return;
+
+  let t=m*60,l=t;
+  clearInterval(timer);
+
+  timer=setInterval(()=>{
+    l--;
+    document.getElementById("time").innerText=
+      Math.floor(l/60)+":"+("0"+l%60).slice(-2);
+
+    document.getElementById("bar").style.width=((t-l)/t)*100+"%";
+
+    if(l<=0) clearInterval(timer);
+  },1000);
 }
 
-/* =========================
-   WORKING FLAPPY BIRD
-========================= */
+/* SUMMARIZER */
+function summarize(){
+  let t=document.getElementById("text").value;
+  document.getElementById("result").innerText=
+    t.split(". ").slice(0,3).join(". ");
+}
 
+/* PLANNER */
+function makePlan(){
+  let arr=document.getElementById("plan").value.split(",");
+  document.getElementById("planOut").innerHTML=
+    arr.map((s,i)=>"Day "+(i+1)+": "+s).join("<br>");
+}
+
+/* TASKS */
+let tasks=JSON.parse(localStorage.tasks||"[]");
+
+function renderTasks(){
+  let list=document.getElementById("tasks");
+  list.innerHTML="";
+  tasks.forEach(t=>{
+    list.innerHTML+=`<li>${t}</li>`;
+  });
+}
+
+function addTask(){
+  let input=document.getElementById("taskInput");
+  if(!input.value.trim()) return;
+
+  tasks.push(input.value);
+  localStorage.tasks=JSON.stringify(tasks);
+  input.value="";
+  renderTasks();
+}
+renderTasks();
+
+/* GAME */
 let canvas=document.getElementById("gameCanvas");
 let ctx=canvas.getContext("2d");
 
-let bird, pipes, velocity, gravity, running, frame, loopId;
+let bird, pipes, velocity, gravity, running, frame;
 
-/* OPEN GAME */
 function openGame(){
-  gameScreen.style.display="block";
+  document.getElementById("gameScreen").style.display="block";
   resetGame();
 }
 
-/* CLOSE GAME */
 function closeGame(){
-  gameScreen.style.display="none";
+  document.getElementById("gameScreen").style.display="none";
   running=false;
-  cancelAnimationFrame(loopId);
 }
 
-/* RESET */
 function resetGame(){
   bird={x:100,y:250,size:20};
   pipes=[];
@@ -62,83 +260,51 @@ function resetGame(){
   gravity=0.5;
   running=false;
   frame=0;
-
-  gameUI.style.display="flex";
-  gameText.innerText="Click Start Game";
-
-  draw(); // 👈 IMPORTANT: prevents black screen
+  draw();
 }
 
-/* START GAME */
 function startGame(){
   running=true;
-  frame=0;
-  pipes=[];
-  velocity=0;
-
-  gameUI.style.display="none";
   loop();
 }
 
-/* GAME LOOP */
 function loop(){
   if(!running) return;
-
   update();
   draw();
-
-  loopId=requestAnimationFrame(loop);
+  requestAnimationFrame(loop);
 }
 
-/* UPDATE */
 function update(){
   frame++;
-
   velocity+=gravity;
   bird.y+=velocity;
 
-  // spawn pipes
-  if(frame % 90 === 0){
+  if(frame%90===0){
     let gap=150;
     let top=Math.random()*300+50;
-
-    pipes.push({
-      x:800,
-      top:top,
-      bottom:top+gap
-    });
+    pipes.push({x:800,top,bottom:top+gap});
   }
 
   pipes.forEach(p=>{
     p.x-=3;
-
-    // collision
     if(
-      bird.x < p.x+50 &&
-      bird.x+bird.size > p.x &&
-      (bird.y < p.top || bird.y+bird.size > p.bottom)
+      bird.x<p.x+50 &&
+      bird.x+20>p.x &&
+      (bird.y<p.top||bird.y+20>p.bottom)
     ){
-      endGame();
+      running=false;
     }
   });
-
-  // out of bounds
-  if(bird.y>600 || bird.y<0){
-    endGame();
-  }
 }
 
-/* DRAW */
 function draw(){
-  // sky
   ctx.fillStyle="#70c5ce";
   ctx.fillRect(0,0,800,600);
 
-  // bird
   ctx.fillStyle="yellow";
-  ctx.fillRect(bird.x,bird.y,bird.size,bird.size);
+  ctx.fillRect(bird.x,bird.y,20,20);
 
-  // pipes
   ctx.fillStyle="green";
   pipes.forEach(p=>{
     ctx.fillRect(p.x,0,50,p.top);
@@ -146,27 +312,11 @@ function draw(){
   });
 }
 
-/* CONTROLS */
 document.addEventListener("keydown",e=>{
-  if(e.code==="Space" && running){
-    velocity=-8;
-  }
+  if(e.code==="Space") velocity=-8;
 });
 
-canvas.addEventListener("click",()=>{
-  if(running){
-    velocity=-8;
-  }
-});
-
-/* END GAME */
-function endGame(){
-  running=false;
-  cancelAnimationFrame(loopId);
-
-  gameUI.style.display="flex";
-  gameText.innerText="Game Over - Click Start";
-}
+canvas.addEventListener("click",()=>velocity=-8);
 
 </script>
 
