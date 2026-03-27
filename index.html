@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Studify</title>
 
+<!-- ✅ ADSENSE ADDED -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9231150738350990"
+crossorigin="anonymous"></script>
+
 <style>
 body {
   margin: 0;
@@ -67,7 +71,6 @@ button.main {
 <button onclick="showPage('tools')">Tools</button>
 </nav>
 
-<!-- HOME -->
 <div id="home" class="page active">
 <h1>Studify</h1>
 
@@ -82,7 +85,6 @@ button.main {
 </div>
 </div>
 
-<!-- TIMER -->
 <div id="timer" class="page">
 <div class="box">
 <input id="mins" placeholder="Minutes">
@@ -91,7 +93,6 @@ button.main {
 </div>
 </div>
 
-<!-- SUMMARIZER -->
 <div id="notes" class="page">
 <div class="box">
 <textarea id="text"></textarea>
@@ -100,7 +101,6 @@ button.main {
 </div>
 </div>
 
-<!-- PLANNER -->
 <div id="planner" class="page">
 <div class="box">
 <textarea id="plan"></textarea>
@@ -109,7 +109,6 @@ button.main {
 </div>
 </div>
 
-<!-- TOOLS -->
 <div id="tools" class="page">
 <div class="box">
 
@@ -138,13 +137,11 @@ button.main {
 
 <script>
 
-/* NAV */
 function showPage(id){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
-/* TIMER + SESSION */
 let timer;
 function startTimer(){
   let m=parseInt(mins.value);
@@ -166,26 +163,23 @@ function startTimer(){
   },1000);
 }
 
-/* SESSION */
 function updateSessions(){
   sessions.innerText=localStorage.sessions||0;
 }
 updateSessions();
 
-/* SUMMARIZER */
 function summarize(){
   let t=text.value.trim();
   result.innerText=t?t.split(". ").slice(0,3).join(". "):"";
 }
 
-/* PLANNER */
 function makePlan(){
   let arr=plan.value.split(",");
   planOut.innerHTML=arr.map((s,i)=>"Day "+(i+1)+": "+s).join("<br>");
 }
 
-/* TASKS */
 let tasks=JSON.parse(localStorage.tasks||"[]");
+let tasksEl=document.getElementById("tasks");
 
 function renderTasks(){
   tasksEl.innerHTML="";
@@ -212,17 +206,14 @@ document.addEventListener("keypress",e=>{
   if(e.key==="Enter") addTask();
 });
 
-let tasksEl=document.getElementById("tasks");
 renderTasks();
 
-/* GOAL */
 goal.innerText=localStorage.goal||"";
 function setGoal(){
   localStorage.goal=goalInput.value;
   goal.innerText=goalInput.value;
 }
 
-/* STREAK */
 let today=new Date().toDateString();
 let last=localStorage.last;
 
@@ -235,14 +226,13 @@ if(last!==today){
 }
 streak.innerText=localStorage.streak||0;
 
-/* QUOTE */
 function quote(){
   let q=["Stay focused","Keep going","Discipline wins","You got this"];
   document.getElementById("quote").innerText=q[Math.floor(Math.random()*q.length)];
 }
 
-/* FLASHCARDS */
 let cards=JSON.parse(localStorage.cards||"[]");
+let cardsDiv=document.getElementById("cards");
 
 function renderCards(){
   cardsDiv.innerHTML="";
@@ -265,7 +255,6 @@ function flip(i){
   el.innerText=cards[i].show?cards[i].a:cards[i].q;
 }
 
-let cardsDiv=document.getElementById("cards");
 renderCards();
 
 </script>
