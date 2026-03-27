@@ -1,179 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Studiq</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- ✅ AdSense Script -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXX"
-     crossorigin="anonymous"></script>
-
-<style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: linear-gradient(135deg, #0f172a, #1e3a8a);
-  color: white;
-}
-
-nav {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  padding: 15px;
-  background: rgba(0,0,0,0.4);
-}
-
-nav button {
-  padding: 10px 15px;
-  border: none;
-  background: #1e3a8a;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.container {
-  padding: 30px;
-}
-
-.card {
-  background: rgba(255,255,255,0.1);
-  padding: 20px;
-  border-radius: 12px;
-  margin-top: 20px;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studiq - Ultimate Study Platform</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #2c3e50;
+      color: white;
+      text-align: center;
+    }
+    h1 {
+      font-size: 48px;
+      margin-top: 50px;
+    }
+    #visitorCount {
+      font-size: 24px;
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+  </style>
 </head>
-
 <body>
+  <h1>Welcome to Studiq - Study Smarter!</h1>
+  <p id="visitorCount">Visitors: 0</p>
+  <button onclick="increaseVisitorCount()">Increase Visitor Count</button>
 
-<nav>
-<button onclick="show('home')">Home</button>
-<button onclick="show('timer')">Timer</button>
-<button onclick="show('planner')">Planner</button>
-<button onclick="show('tools')">Tools</button>
-</nav>
-
-<div class="container">
-
-<!-- HOME -->
-<div id="home">
-<h1>Studiq</h1>
-<p>Study smarter. Stay focused.</p>
-
-<div class="card">
-<h3>Visitors</h3>
-<p id="visits">Loading...</p>
-</div>
-
-<!-- ✅ AD UNIT -->
-<div class="card">
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-XXXXXXXXXXXX"
-     data-ad-slot="1234567890"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-</div>
-
-</div>
-
-<!-- TIMER -->
-<div id="timer" style="display:none">
-<div class="card">
-<h3>Pomodoro Timer</h3>
-<p id="time">25:00</p>
-<button onclick="startTimer()">Start</button>
-<button onclick="resetTimer()">Reset</button>
-</div>
-</div>
-
-<!-- PLANNER -->
-<div id="planner" style="display:none">
-<div class="card">
-<h3>Task Planner</h3>
-<input id="taskInput" placeholder="Enter task">
-<button onclick="addTask()">Add</button>
-<ul id="tasks"></ul>
-</div>
-</div>
-
-<!-- TOOLS -->
-<div id="tools" style="display:none">
-<div class="card">
-<h3>Text Tools</h3>
-<input id="textInput" placeholder="Enter text"><br><br>
-<button onclick="upper()">UPPERCASE</button>
-<button onclick="lower()">lowercase</button>
-<p id="output"></p>
-</div>
-</div>
-
-</div>
-
-<script>
-function show(id){
- document.getElementById('home').style.display='none';
- document.getElementById('timer').style.display='none';
- document.getElementById('planner').style.display='none';
- document.getElementById('tools').style.display='none';
-
- document.getElementById(id).style.display='block';
-}
-
-/* VISITOR COUNTER (simple) */
-let count = localStorage.getItem("visits") || 0;
-count++;
-localStorage.setItem("visits", count);
-document.getElementById("visits").innerText = count;
-
-/* TIMER */
-let t = 1500;
-let interval;
-
-function startTimer(){
- clearInterval(interval);
- interval = setInterval(()=>{
-  if(t>0){
-    t--;
-    let m=Math.floor(t/60);
-    let s=t%60;
-    document.getElementById("time").innerText =
-    m+":"+(s<10?"0":"")+s;
-  }
- },1000);
-}
-
-function resetTimer(){
- clearInterval(interval);
- t=1500;
- document.getElementById("time").innerText="25:00";
-}
-
-/* TASKS */
-function addTask(){
- let input=document.getElementById("taskInput");
- let li=document.createElement("li");
- li.innerText=input.value;
- li.onclick=()=>li.remove();
- document.getElementById("tasks").appendChild(li);
- input.value="";
-}
-
-/* TEXT TOOLS */
-function upper(){
- document.getElementById("output").innerText =
- document.getElementById("textInput").value.toUpperCase();
-}
-function lower(){
- document.getElementById("output").innerText =
- document.getElementById("textInput").value.toLowerCase();
-}
-
-/* LOAD ADS */
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
+  <script>
+    let visitorCount = 0;
+    
+    function increaseVisitorCount() {
+      visitorCount++;
+      document.getElementById("visitorCount").innerText = "Visitors: " + visitorCount;
+    }
+  </script>
 </body>
 </html>
