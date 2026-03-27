@@ -29,14 +29,32 @@ nav button {
   cursor: pointer;
 }
 
-.page { display: none; padding: 40px; max-width: 1000px; margin: auto; }
-.active { display: block; }
+/* Smooth pages */
+.page {
+  display: none;
+  padding: 40px;
+  max-width: 1000px;
+  margin: auto;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
 
+.page.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Glass UI */
 .box {
-  background: rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.08);
   padding: 25px;
   border-radius: 20px;
   margin-top: 20px;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
 }
 
 textarea, input {
@@ -45,6 +63,20 @@ textarea, input {
   border-radius: 10px;
   border: none;
   margin-top: 10px;
+}
+
+/* Buttons */
+button {
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+button:active {
+  transform: scale(0.96);
 }
 
 button.main {
@@ -59,8 +91,20 @@ button.main {
 
 #time { font-size: 48px; text-align: center; margin-top: 15px; }
 
-.progress { height: 6px; background: rgba(255,255,255,0.2); border-radius: 10px; margin-top: 10px; }
-.progress-bar { height: 100%; width: 0%; background: #22c55e; }
+/* Progress bar */
+.progress {
+  height: 6px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: #22c55e;
+  transition: width 0.3s linear;
+}
 
 #gameCanvas { background: black; display: block; margin: auto; }
 </style>
@@ -87,7 +131,6 @@ button.main {
 <p>All-in-one study system to help you focus and improve daily.</p>
 </div>
 
-<!-- ✅ CONTACT SECTION (ADDED) -->
 <div class="box" style="text-align:center;">
   <h3>⚠️ Found a problem?</h3>
   <p>Click below to contact support:</p>
@@ -96,11 +139,9 @@ button.main {
      📩 Email Support
   </a>
 </div>
-
 </div>
 
-<!-- REST OF YOUR CODE (UNCHANGED) -->
-
+<!-- TIMER -->
 <div id="timer" class="page">
 <div class="box">
 <h2>⏱ Study Timer</h2>
@@ -111,15 +152,18 @@ button.main {
 </div>
 </div>
 
+<!-- SUMMARIZER -->
 <div id="notes" class="page">
 <div class="box">
 <h2>🧠 Smart Summarizer</h2>
 <textarea id="text" placeholder="Paste notes..."></textarea>
 <button class="main" onclick="summarize()">Summarize</button>
+<button class="main" onclick="copySummary()">Copy Summary</button>
 <div id="result"></div>
 </div>
 </div>
 
+<!-- PLANNER -->
 <div id="planner" class="page">
 <div class="box">
 <h2>📅 Planner</h2>
@@ -129,6 +173,7 @@ button.main {
 </div>
 </div>
 
+<!-- TOOLS -->
 <div id="tools" class="page">
 <div class="box">
 <h3>💬 Motivation</h3>
@@ -150,13 +195,159 @@ button.main {
 </div>
 </div>
 
+<!-- GAME -->
 <div id="gameScreen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black;">
 <canvas id="gameCanvas" width="800" height="600"></canvas>
 <button onclick="closeGame()" style="position:absolute;top:10px;right:10px;">Exit</button>
 </div>
 
 <script>
-// your JS stays EXACTLY the same (no changes needed)
+
+/* NAV */
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* TIMER */
+let interval;
+function startTimer(){
+  let mins = parseInt(document.getElementById("mins").value);
+  if(isNaN(mins) || mins <= 0) return;
+
+  let total = mins * 60;
+  let left = total;
+
+  clearInterval(interval);
+
+  interval = setInterval(()=>{
+    left--;
+    let m = Math.floor(left/60);
+    let s = left%60;
+    document.getElementById("time").innerText =
+      `${m.toString().padStart(2,"0")}:${s.toString().padStart(2,"0")}`;
+
+    document.getElementById("bar").style.width =
+      ((total-left)/total)*100 + "%";
+
+    if(left <= 0){
+      clearInterval(interval);
+      new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg").play();
+    }
+  },1000);
+}
+
+/* SUMMARIZER */
+function summarize(){
+  let text = document.getElementById("text").value;
+  let sentences = text.split(". ");
+  let result = sentences.slice(0,3).join(". ");
+  document.getElementById("result").innerText = result || "Enter text.";
+}
+
+function copySummary(){
+  let text = document.getElementById("result").innerText;
+  if(!text) return;
+  navigator.clipboard.writeText(text);
+}
+
+/* PLANNER */
+function makePlan(){
+  let input = document.getElementById("plan").value.split(",");
+  let days = ["Day 1","Day 2","Day 3","Day 4","Day 5","Day 6","Day 7"];
+  let out = "";
+  input.forEach((s,i)=>{
+    if(s.trim()) out += `${days[i%7]}: ${s.trim()}<br>`;
+  });
+  document.getElementById("planOut").innerHTML = out;
+}
+
+/* TASKS */
+let tasks = JSON.parse(localStorage.getItem("tasks")||"[]");
+
+function renderTasks(){
+  let ul = document.getElementById("tasks");
+  ul.innerHTML="";
+  tasks.forEach((t,i)=>{
+    let li=document.createElement("li");
+    li.innerHTML=`${t} <button onclick="delTask(${i})">❌</button>`;
+    ul.appendChild(li);
+  });
+}
+renderTasks();
+
+function addTask(){
+  let input=document.getElementById("taskInput");
+  if(!input.value.trim()) return;
+  tasks.push(input.value);
+  localStorage.setItem("tasks",JSON.stringify(tasks));
+  input.value="";
+  renderTasks();
+}
+
+function delTask(i){
+  tasks.splice(i,1);
+  localStorage.setItem("tasks",JSON.stringify(tasks));
+  renderTasks();
+}
+
+document.getElementById("taskInput").addEventListener("keypress",e=>{
+  if(e.key==="Enter") addTask();
+});
+
+/* GOAL */
+function setGoal(){
+  let g=document.getElementById("goalInput").value;
+  localStorage.setItem("goal",g);
+  document.getElementById("goal").innerText=g;
+}
+document.getElementById("goal").innerText=localStorage.getItem("goal")||"";
+
+/* STREAK */
+const today = new Date().toDateString();
+const last = localStorage.getItem("lastVisit");
+
+if(last !== today){
+  let streak = parseInt(localStorage.getItem("streak")||"0");
+  let y = new Date();
+  y.setDate(y.getDate()-1);
+
+  if(last === y.toDateString()) streak++;
+  else streak = 1;
+
+  localStorage.setItem("streak",streak);
+  localStorage.setItem("lastVisit",today);
+}
+
+document.getElementById("streak").innerText =
+  (localStorage.getItem("streak")||0) + " days";
+
+/* QUOTES */
+function quote(){
+  let q=["Stay focused","Keep going","Discipline wins","You got this"];
+  document.getElementById("quote").innerText =
+    q[Math.floor(Math.random()*q.length)];
+}
+
+/* GAME */
+let gameStarted=false;
+
+function openGame(){
+  document.getElementById("gameScreen").style.display="block";
+  gameStarted=true;
+}
+
+function closeGame(){
+  document.getElementById("gameScreen").style.display="none";
+  gameStarted=false;
+}
+
+document.addEventListener("keydown",e=>{
+  if(!gameStarted) return;
+  // your existing movement logic stays
+});
+
 </script>
 
 </body>
